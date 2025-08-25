@@ -1,0 +1,54 @@
+                                                                                                                                                             % 绘制平滑后的 AIN1
+figure;
+plot(time, AIN1_smooth, 'r-', 'LineWidth', 3, 'DisplayName', 'AIN1');
+hold on;
+
+% 在图中标记所有最小点和对应范围内的最大值
+for i = 1:length(min_indices)
+    % 标记最小值
+    plot(time(min_indices(i)), min_AIN1_values(i), 'bo', 'MarkerSize', 16, 'LineWidth', 3); % 不添加DisplayName
+    
+    % 将最小值的文本标注在红线的下方
+    text(time(min_indices(i)), min_AIN1_values(i) - 0.05, ...
+        sprintf('%.4f', min_AIN1_values(i)), ...
+        'FontSize', 18, ...
+        'VerticalAlignment', 'top', 'HorizontalAlignment', 'center'); 
+    
+    % 标记对应的最大值
+    max_idx = find(AIN1_smooth == max_values(i), 1);
+    plot(time(max_idx), max_values(i), 'ro', 'MarkerSize', 16, 'LineWidth', 3); % 不添加DisplayName
+    
+    % 将最大值的文本标注在红线的上方
+    text(time(max_idx), max_values(i) + 0.05, ...
+        sprintf('%.4f', max_values(i)), ...
+        'FontSize', 18, ...
+        'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'center');
+end
+
+% 标记差值最大的点
+plot(time(min_indices(max_diff_idx)), min_AIN1_values(max_diff_idx), 'ms', 'MarkerSize', 16, 'LineWidth', 3, 'DisplayName', 'Max Diff Point');
+text(time(min_indices(max_diff_idx)), min_AIN1_values(max_diff_idx) - 0.1, ...
+    sprintf('Max Diff: %.4f', differences(max_diff_idx)), ...
+    'FontSize', 18, ...
+    'VerticalAlignment', 'top', 'HorizontalAlignment', 'center');
+
+% 设置坐标轴范围
+xlabel('Time (s)', 'FontSize', 20); % 设置横坐标标签字体大小
+ylabel('Amplitude', 'FontSize', 20); % 设置纵坐标标签字体大小
+set(gca, 'FontSize', 18); % 设置坐标轴刻度字体大小
+ylim([0 1]); % 设置纵坐标范围为 [0, 1]
+legend({'AIN1', 'Max Diff Point'}, 'Location', 'best', 'FontSize', 18); % 指定图例显示内容
+grid on;
+hold off;
+
+% 显示结果
+fprintf('找到的最小点与左右200点范围内最大点的差值：\n');
+for i = 1:length(min_indices)
+    fprintf('时间 %.2f 秒, 最小值 %.4f, 最大值 %.4f, 差值 %.4f\n', ...
+        time(min_indices(i)), min_AIN1_values(i), max_values(i), differences(i));
+end
+
+% 输出差值最大的点
+fprintf('\n差值最大的点：\n');
+fprintf('时间 %.2f 秒, 差值 %.4f\n', ...
+    time(min_indices(max_diff_idx)), differences(max_diff_idx));
